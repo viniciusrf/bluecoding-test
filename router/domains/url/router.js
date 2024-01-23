@@ -15,12 +15,23 @@ module.exports = ( urlService ) => {
 		res.status(200).json(urls);
 	});
 
-	router.post('/',urlService.verifyAuthentication(), async (req, res) => {
-		
-		const url = req.body.url;
-		 // url shortener logic
+	router.get('/:shortened', urlService.verifyAuthentication(), async (req, res) => {
 
-		const urlObject = await urlService.postURL(url_full, url_shortened, 1, title);
+        const shortened = req.params.shortened;
+
+		const url_full = await urlService.getFullURL(shortened);
+
+		res.status(200).json(url_full);
+	});
+
+	router.post('/', urlService.verifyAuthentication(), async (req, res) => {
+		
+		const url_full = req.body.urlFull;
+		const url_shortened = await urlService.urlToShortURL(url_full)
+		const usage = 1
+		const title = '' // will be add by worker
+
+		const urlObject = await urlService.postURL(url_full, url_shortened, usage, title);
 
 		res.status(200).json(urlObject.project());
 	});

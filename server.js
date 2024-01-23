@@ -6,6 +6,7 @@ class HTTPServer {
         this.db = dbService;
 
         this.app = express();
+        this.app.use(express.json({limit: '50mb'}));
         this.app.use('/api/', mainRouter(dbService));
     }
 

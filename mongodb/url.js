@@ -1,19 +1,21 @@
 const mongoose = require('mongoose');
 
-const url_full = new mongoose.Schema({
+const URL = new mongoose.Schema({
     url_full: String,
     url_shortened: String,
     usage: Number,
-    title: String
+    title: String,
+    numberID: Number
 });
 
-url_full.methods.project = function () {
+URL.methods.project = function () {
     return {
         id: this._id,
         url_full: this.url_full,
         url_shortened: this.url_shortened,
         usage: this.usage,
-        title: this.title
+        title: this.title,
+        numberID: this.numberID
     };
 };
- module.exports = url_full;
+ module.exports = URL;

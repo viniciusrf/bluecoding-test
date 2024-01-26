@@ -21,16 +21,16 @@ class HTTPServer {
     }
 
     stop() {
-        // return new Promise((resolve, reject) = {
-        //     this.server.close((err) => {
-        //         if (err){
-        //             console.log(err);
-        //             reject(err);
-        //         }
-        //         console.info('Closing everything now...');
-        //         resolve(this);
-        //     })
-        // })
+        return new Promise((resolve, reject) => {
+            this.server.close((err) => {
+                if (err){
+                    console.log(err);
+                    reject(err);
+                }
+                console.info('Closing everything now...');
+                resolve(this);
+            })
+        })
     }
 }
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-module.exports = ( urlService ) => {
+module.exports = ( configService, urlService ) => {
 	router.get('/', urlService.verifyAuthentication(), async (req, res) => {
 		const usage = req.query.usage;
         const url = req.query.url
@@ -29,10 +29,12 @@ module.exports = ( urlService ) => {
 		const url_full = req.body.urlFull;
 		urlFound = await urlService.getURL({url_full: url_full});
 		if (urlFound.length === 0) {
-			const url_shortened = ''
+			const numberID = await configService.getUrlCounting();
+			const url_shortened = await urlService.idToShortURL(numberID)
 			const usage = 1
 			const title = '' // will be add by worker
-			const urlObject = await urlService.postURL(url_full, url_shortened, usage, title);
+			const urlObject = await urlService.postURL(url_full, url_shortened, usage, title, numberID);
+			await configService.urlCountPlusOne();
 			res.status(200).json(urlObject);
 		} else {
 			res.status(200).json(urlFound);

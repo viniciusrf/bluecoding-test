@@ -1,17 +1,18 @@
 
 const mongoDB = require('./mongodb/mongo');
+const config = require('./config');
 const HTTPServer = require('./server');
 
     try {
-        console.log("its working!");
-        const dbService = new mongoDB('mongodb://localhost/bluecoding')
+        const dbService = new mongoDB(config.mongoUrl)
 
         dbService.connect();
 
         const server = new HTTPServer(dbService);
 
-        server.listen('localhost', '3000');
+        server.listen(config.host, config.port);
         
     } catch(ex) {
         throw new Error(ex);
     }
+

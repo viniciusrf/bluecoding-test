@@ -16,7 +16,26 @@ class URL {
     }
 
     async postURL(url_full, url_shortened, usage, title) {
-        return this.db.url_full({url_full, url_shortened, usage, title}).save();
+
+        while (1) {
+
+            let cursor = this.db.url_full.find( {}, { _id: 1 } ).sort( { _id: -1 } ).limit(1).cursor();
+            let seq =  cursor.next() ? cursor._id + 1 : 1;
+            if (!seq) seq = 1;
+            let _id = seq;
+    
+            let results =  await this.db.url_full({_id, url_full, url_shortened, usage, title}).save();
+    
+            if( results.hasWriteError() ) {
+                if( results.writeError.code == 11000 /* dup key */ )
+                    continue;
+                else
+                    print( "unexpected error inserting data: " + tojson( results ) );
+            }
+    
+            break;
+        }
+        return results;
     };
 
     async updateTitle(url, title){
@@ -34,7 +53,8 @@ class URL {
         return urlFound.save();
     }
 
-    async urlToShortURL(url)  
+
+    async idToShortURL(url)  
 		{ 
 		  
 			// Map to store 62 possible characters 

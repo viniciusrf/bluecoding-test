@@ -8,7 +8,7 @@ module.exports = ( urlService ) => {
 
 		let filter = {};
         if (usage) filter.usage = usage;
-		if (url) filter.url = url
+		if (url) filter.url_full = url
 
 		const urls = await urlService.getURL(filter);
 
@@ -27,13 +27,17 @@ module.exports = ( urlService ) => {
 	router.post('/', urlService.verifyAuthentication(), async (req, res) => {
 		
 		const url_full = req.body.urlFull;
-		const url_shortened = await urlService.urlToShortURL(url_full)
-		const usage = 1
-		const title = '' // will be add by worker
-
-		const urlObject = await urlService.postURL(url_full, url_shortened, usage, title);
-
-		res.status(200).json(urlObject.project());
+		urlFound = await urlService.getURL({url_full: url_full});
+		if (urlFound.length === 0) {
+			const url_shortened = ''
+			const usage = 1
+			const title = '' // will be add by worker
+			const urlObject = await urlService.postURL(url_full, url_shortened, usage, title);
+			res.status(200).json(urlObject);
+		} else {
+			res.status(200).json(urlFound);
+		}
+		
 	});
 
     router.put('/', urlService.verifyAuthentication(), async (req, res) => {

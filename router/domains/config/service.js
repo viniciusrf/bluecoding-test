@@ -31,9 +31,10 @@ class Config {
         let count = 0;
         let config_counter = await  this.db.Config.findOne({config_name: "counter"});
         if (!config_counter) throw new HTTPError("URL not found");
-        
-        config_counter.data.url_counter++;
-        return  config_counter.save();
+
+        config_counter.data.url_counter = config_counter.data.url_counter + 1;
+        config_counter.markModified("data");
+        return await config_counter.save();
     }
     verifyAuthentication(required = true) {
         return async (req, res, next) => {
